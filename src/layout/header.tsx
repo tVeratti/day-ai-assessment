@@ -9,7 +9,7 @@ const Root = styled.header`
 export default function Header() {
   return (
     <Root>
-      <Typography variant="h2">App Name</Typography>
+      <Typography variant="h2">Weatherproof AI</Typography>
     </Root>
   );
 }
