@@ -6,10 +6,19 @@ const Root = styled.header`
   padding: 1rem;
 `;
 
+const LogoAnchor = styled.a`
+  color: #333;
+  text-decoration: none;
+`;
+
 export default function Header() {
   return (
     <Root>
-      <Typography variant="h2">Weatherproof AI</Typography>
+      <LogoAnchor href="/">
+        <Typography variant="h4" component="span">
+          Weatherproof AI
+        </Typography>
+      </LogoAnchor>
     </Root>
   );
 }

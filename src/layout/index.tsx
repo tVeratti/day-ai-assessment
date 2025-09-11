@@ -14,6 +14,7 @@ const Root = styled.div`
 
 const Main = styled.div`
   flex: 1;
+  padding: 2rem;
 `;
 
 export default function Layout({ children }: LayoutProps) {
