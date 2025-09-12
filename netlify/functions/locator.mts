@@ -9,14 +9,15 @@ const openai = new OpenAI({
 
 export default async (req: Request, _context) => {
   const body = await req.json();
-  const { locationDescription } = body;
+  const { conversation } = body;
 
   const response = await openai.responses.create({
     model: "gpt-4.1-nano",
     instructions:
       "Determine the user's location based on a potentially vague description. Provide a one sentence guess.",
-    input: locationDescription,
+    input: conversation,
     stream: true,
+    store: true,
   });
 
   const readableStream = new ReadableStream({
