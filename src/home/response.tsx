@@ -12,7 +12,7 @@ import { useCallback, useState } from "react";
 interface ResponseProps {
   text?: string;
   onConfirm: () => void;
-  onRetry: () => void;
+  onRetry: (currentGuess: string) => void;
   isLoading: boolean;
   /** Text will stream in, indicate if it's still "typing"... */
   isStreaming?: boolean;
@@ -67,8 +67,8 @@ export default function Response({
   }, []);
 
   const handleRetry = useCallback(() => {
-    onRetry();
-  }, []);
+    onRetry(text || "");
+  }, [text]);
 
   let stateEmoji: string = STATE_EMOJIS.READY;
   switch (true) {

@@ -1,79 +1,58 @@
 import { Stack } from "@mui/material";
 import { useCallback, useState, useTransition } from "react";
+import fetchLocation from "../data/fetchLocation";
+import useStreamResponse from "../data/useStreamResponse";
 import InstructionsInput from "./instructions";
 import Introduction from "./introduction";
 import ResponseArea from "./response";
 
 export default function Home() {
-  const [previousInstructions, setPreviousInstructions] = useState<
-    Array<string>
-  >([]);
   const [isPending, startTransition] = useTransition();
-  const [locationResponse, setLocationResponse] = useState<string>("");
+  const [locationInstructions, setLocationInstructions] = useState<string>("");
+  const [locationResponse, setLocationResponse] = useState<Response>();
 
-  const fetchLocation = useCallback(async (locationDescription: string) => {
-    // TODO: Separate into its own file
-    const response = await fetch("/.netlify/functions/locator", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        locationDescription,
-      }),
-    });
-
-    setLocationResponse("");
-
-    if (response.body) {
-      // Stream the response and save the text delta
-      const reader = response.body.getReader();
-      const readStream = async () => {
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-
-            if (done) {
-              break;
-            }
-
-            const chunk = new TextDecoder().decode(value);
-            setLocationResponse((prevText) => prevText + chunk);
-          }
-        } catch (err) {
-          // TODO: Add error handling
-        } finally {
-          reader.releaseLock();
-        }
-      };
-
-      readStream();
-    }
-  }, []);
+  const { text: locationText, isReading: isReadingLocation } =
+    useStreamResponse(locationResponse);
 
   const handleSubmit = useCallback((instructions: string) => {
+    setLocationInstructions(instructions);
     // Clear previous response - TODO: Add response history?
-    setLocationResponse("...");
     startTransition(async () => {
-      await fetchLocation(instructions);
-      setPreviousInstructions((previous) => [...previous, instructions]);
+      const response = await fetchLocation(instructions);
+      setLocationResponse(response);
+
       return; // done
     });
   }, []);
 
-  const handleConfirmLocation = useCallback(() => {}, []);
+  const handleConfirmLocation = useCallback(() => {
+    // fetch attire recommendations next
+  }, []);
 
-  const handleRetryLocation = useCallback(() => {}, []);
+  const handleRetryLocation = useCallback(
+    (currentGuess: string) => {
+      startTransition(async () => {
+        const response = await fetchLocation(
+          `retry guessing based on "${locationInstructions}" - previous guess that was incorrect was: "${currentGuess}"`,
+        );
+        setLocationResponse(response);
+
+        return; // done
+      });
+    },
+    [locationInstructions],
+  );
 
   return (
     <Stack>
-      <Introduction isFirstQuery={!previousInstructions.length} />
+      <Introduction isFirstQuery={true} />
       {/* Location Input */}
       <InstructionsInput onSubmit={handleSubmit} />
       {locationResponse && (
         <ResponseArea
           isLoading={isPending}
-          text={locationResponse}
+          isStreaming={isReadingLocation}
+          text={locationText}
           onConfirm={handleConfirmLocation}
           onRetry={handleRetryLocation}
         />
