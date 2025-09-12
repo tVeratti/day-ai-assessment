@@ -9,12 +9,16 @@ import {
 import { useCallback, useState } from "react";
 
 interface InstructionsProps {
+  isLoading: boolean;
   onSubmit: (instructions: string) => void;
 }
 
 const SUBMIT_KEYS: Array<String> = ["Enter"];
 
-export default function Instructions({ onSubmit }: InstructionsProps) {
+export default function Instructions({
+  isLoading,
+  onSubmit,
+}: InstructionsProps) {
   const [locationDescription, setLocationDescription] = useState<string>("");
 
   const handleSubmit = useCallback(() => {
@@ -47,11 +51,17 @@ export default function Instructions({ onSubmit }: InstructionsProps) {
         multiline
         rows={3}
         fullWidth
+        disabled={isLoading}
         onKeyDown={handleKeyDown}
         onInput={handleInput}
         endAdornment={
           <InputAdornment position="end">
-            <IconButton size="large" color="primary" onClick={handleSubmit}>
+            <IconButton
+              size="large"
+              color="primary"
+              onClick={handleSubmit}
+              disabled={isLoading}
+            >
               <PlayArrowIcon fontSize="large" />
             </IconButton>
           </InputAdornment>

@@ -1,5 +1,6 @@
 import { Stack } from "@mui/material";
 import { useCallback, useEffect, useState, useTransition } from "react";
+import fetchAttire from "../data/fetchAttire";
 import fetchLocation, { type LocationResponse } from "../data/fetchLocation";
 import useConversation from "../data/useConversation";
 import useStreamResponse from "../data/useStreamResponse";
@@ -17,10 +18,9 @@ export default function Home() {
   const [responses, setResponses] = useState<Array<string>>([]);
   const locationConversation = useConversation(instructions, responses);
 
-  // Response streams return by fetch calls
+  // Attire Recommendation Response / Stream
   const [recommendationResponse, setRecommendationResponse] =
     useState<Response>();
-
   const { text: recommendationText } = useStreamResponse(
     recommendationResponse,
   );
@@ -46,15 +46,15 @@ export default function Home() {
 
   const handleConfirmLocation = useCallback(() => {
     if (location) {
-      // // fetch attire recommendations next
-      // startTransition(async () => {
-      //   const response = await fetchAttire(
-      //     location.latitude,
-      //     location.longitude,
-      //   );
-      //   setRecommendationResponse(response);
-      //   return; // done
-      // });
+      // fetch attire recommendations next
+      startTransition(async () => {
+        const response = await fetchAttire(
+          location.latitude,
+          location.longitude,
+        );
+        setRecommendationResponse(response);
+        return; // done
+      });
     }
   }, [location]);
 
@@ -74,14 +74,17 @@ export default function Home() {
     <Stack>
       <Introduction isFirstQuery={true} />
       {/* Location Input */}
-      <InstructionsInput onSubmit={handleSubmit} />
+      <InstructionsInput onSubmit={handleSubmit} isLoading={isPending} />
 
-      <ResponseArea
-        isLoading={isPending}
-        text={responseText}
-        onConfirm={handleConfirmLocation}
-        onRetry={handleRetryLocation}
-      />
+      {/* Location Response */}
+      {responseText && (
+        <ResponseArea
+          isLoading={isPending}
+          text={responseText}
+          onConfirm={handleConfirmLocation}
+          onRetry={handleRetryLocation}
+        />
+      )}
 
       {/* Attire Response */}
       {recommendationResponse && (

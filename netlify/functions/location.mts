@@ -20,11 +20,10 @@ export default async (req: Request, _context) => {
   const { conversation } = body;
 
   // TODO: handle input that cannot generate a valid response
-
   const response = await openai.responses.parse({
     model: "gpt-4.1-nano",
     instructions:
-      "Determine the user's location based on a potentially vague description. Review previous responses in case there are incorrect guesses already made.",
+      "Determine the user's location based on a potentially vague description. Review previous responses in case there are incorrect guesses already made. Only use digits in latitude/longitude.",
     input: conversation,
     store: true,
     text: {

@@ -93,7 +93,7 @@ export default function Response({
       </Avatar>
       <Card variant="outlined">
         <CardContent>{text || "..."}</CardContent>
-        {!isConfirmed && !showLoading && text && (
+        {!showLoading && text && (
           <CardActions>
             {onConfirm && (
               <Button variant="contained" onClick={handleConfirm}>
