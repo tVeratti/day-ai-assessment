@@ -12,6 +12,7 @@ const openai = new OpenAI({
 const LocationEvent = z.object({
   latitude: z.string(),
   longitude: z.string(),
+  guessReason: z.string(),
   friendlyName: z.string(),
 });
 

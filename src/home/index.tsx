@@ -4,13 +4,14 @@ import fetchAttire from "../data/fetchAttire";
 import fetchLocation, { type LocationResponse } from "../data/fetchLocation";
 import useConversation from "../data/useConversation";
 import useStreamResponse from "../data/useStreamResponse";
-import InstructionsInput from "./instructions";
+import AttireSection from "./attireSection";
 import Introduction from "./introduction";
-import ResponseArea from "./response";
+import InstructionsInput from "./locationSection/instructions";
+
+import LocationConfirmation from "./locationSection/locationConfirmation";
 
 export default function Home() {
   const [location, setLocation] = useState<LocationResponse>();
-  const [responseText, setResponseText] = useState<string>("");
   const [isPending, startTransition] = useTransition();
 
   // Conversation history
@@ -21,21 +22,21 @@ export default function Home() {
   // Attire Recommendation Response / Stream
   const [recommendationResponse, setRecommendationResponse] =
     useState<Response>();
-  const { text: recommendationText } = useStreamResponse(
+  const { text: attireJson, reset: resetAttire } = useStreamResponse(
     recommendationResponse,
   );
 
   const handleSubmit = useCallback((newInstructions: string) => {
+    console.log(newInstructions);
     // Trigger next fetch by adding in the INSTRUCTIONS, and
     // therefore altering the `conversation` array that is being watched.
-    setInstructions((prev) => [...prev, newInstructions]);
+    setInstructions([newInstructions]);
   }, []);
 
   const handleRetryLocation = useCallback(() => {
     if (location) {
       // Trigger next fetch by adding in the previous RESPONSE, and
       // therefore altering the `conversation` array that is being watched.
-      setResponseText("Hmm, let me try again...");
       setResponses((prev) => [...prev, location.friendlyName]);
       setInstructions((prev) => [
         ...prev,
@@ -60,15 +61,15 @@ export default function Home() {
 
   useEffect(() => {
     if (locationConversation.length) {
+      resetAttire();
       startTransition(async () => {
         const response = await fetchLocation(locationConversation);
         const result = await response.json();
         setLocation(result);
-        setResponseText(result.friendlyName);
         return; // done
       });
     }
-  }, [locationConversation.length]);
+  }, [locationConversation]);
 
   return (
     <Stack>
@@ -77,19 +78,17 @@ export default function Home() {
       <InstructionsInput onSubmit={handleSubmit} isLoading={isPending} />
 
       {/* Location Response */}
-      {responseText && (
-        <ResponseArea
+      {location && (
+        <LocationConfirmation
           isLoading={isPending}
-          text={responseText}
+          locationResponse={location}
           onConfirm={handleConfirmLocation}
           onRetry={handleRetryLocation}
         />
       )}
 
       {/* Attire Response */}
-      {recommendationResponse && (
-        <ResponseArea isLoading={isPending} text={recommendationText} />
-      )}
+      <AttireSection isLoading={isPending} attireResponseJson={attireJson} />
     </Stack>
   );
 }

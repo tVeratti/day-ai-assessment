@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
+import { flushSync } from "react-dom";
 
 const useStreamResponse = (response: Response | undefined) => {
   const [text, setText] = useState<string>("");
   const [isReading, setIsReading] = useState<boolean>(false);
+
+  const reset = () => setText("");
 
   useEffect(() => {
     if (response?.body) {
@@ -16,7 +19,9 @@ const useStreamResponse = (response: Response | undefined) => {
             const { done, value } = await reader.read();
 
             if (done) {
-              setIsReading(false);
+              flushSync(() => {
+                setIsReading(false);
+              });
               break;
             }
 
@@ -39,7 +44,7 @@ const useStreamResponse = (response: Response | undefined) => {
     }
   }, [response]);
 
-  return { text, isReading };
+  return { text, isReading, reset };
 };
 
 export default useStreamResponse;

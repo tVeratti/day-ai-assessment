@@ -4,6 +4,7 @@ export interface LocationResponse {
   longitude: string;
   latitude: string;
   friendlyName: string;
+  guessReason: string;
 }
 
 const fetchLocation = async (conversation: Array<InputEntry>) => {

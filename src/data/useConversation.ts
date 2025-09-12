@@ -9,6 +9,7 @@ const useConversation = (
   instructions: Array<string>,
   responses: Array<string>,
 ): Array<InputEntry> => {
+  const instructionsString = instructions.join("_");
   return useMemo(() => {
     const conversation: Array<InputEntry> = [];
     for (let i = 0; i < instructions.length; i++) {
@@ -25,7 +26,7 @@ const useConversation = (
     }
 
     return conversation;
-  }, [instructions.length, responses.length]);
+  }, [instructionsString, responses]);
 };
 
 export default useConversation;

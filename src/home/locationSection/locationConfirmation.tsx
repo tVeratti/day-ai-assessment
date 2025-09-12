@@ -5,17 +5,17 @@ import {
   Card,
   CardActions,
   CardContent,
+  Typography,
   useTheme,
 } from "@mui/material";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
+import type { LocationResponse } from "../../data/fetchLocation";
 
 interface ResponseProps {
+  locationResponse?: LocationResponse;
   isLoading: boolean;
-  text?: string;
   onConfirm?: () => void;
   onRetry?: () => void;
-  /** Text will stream in, indicate if it's still "typing"... */
-  isStreaming?: boolean;
 }
 
 interface RootProps {
@@ -50,35 +50,30 @@ const STATE_EMOJIS: Record<string, string> = {
   READY: ":)",
 };
 
-export default function Response({
-  text,
+export default function LocationConfirmation({
+  locationResponse,
   isLoading,
-  isStreaming,
+
   onConfirm,
   onRetry,
 }: ResponseProps) {
   const theme = useTheme();
   const showLoading: boolean = isLoading;
-  const [isConfirmed, setIsConfirmed] = useState<boolean>(false);
 
   const handleConfirm = useCallback(() => {
-    setIsConfirmed(true);
     if (onConfirm) {
       onConfirm();
     }
-  }, [text]);
+  }, []);
 
   const handleRetry = useCallback(() => {
     if (onRetry) {
       onRetry();
     }
-  }, [text]);
+  }, []);
 
   let stateEmoji: string = STATE_EMOJIS.READY;
   switch (true) {
-    case isStreaming:
-      stateEmoji = STATE_EMOJIS.STREAMING;
-      break;
     case isLoading:
       stateEmoji = STATE_EMOJIS.LOADING;
       break;
@@ -92,20 +87,29 @@ export default function Response({
         {stateEmoji}
       </Avatar>
       <Card variant="outlined">
-        <CardContent>{text || "..."}</CardContent>
-        {!showLoading && text && (
-          <CardActions>
-            {onConfirm && (
-              <Button variant="contained" onClick={handleConfirm}>
-                Confirm
-              </Button>
-            )}
-            {onRetry && (
-              <Button variant="text" onClick={handleRetry}>
-                Retry
-              </Button>
-            )}
-          </CardActions>
+        {!showLoading && locationResponse && (
+          <>
+            <CardContent>
+              <Typography variant="body1">
+                {locationResponse.guessReason}
+              </Typography>
+              <Typography variant="h4" component="p">
+                {locationResponse.friendlyName}
+              </Typography>
+            </CardContent>
+            <CardActions>
+              {onConfirm && (
+                <Button variant="contained" onClick={handleConfirm}>
+                  Confirm
+                </Button>
+              )}
+              {onRetry && (
+                <Button variant="text" onClick={handleRetry}>
+                  Retry
+                </Button>
+              )}
+            </CardActions>
+          </>
         )}
       </Card>
     </Root>
