@@ -12,8 +12,8 @@ import { useCallback, useState } from "react";
 interface ResponseProps {
   isLoading: boolean;
   text?: string;
-  onConfirm?: (currentGuess: string) => void;
-  onRetry?: (currentGuess: string) => void;
+  onConfirm?: () => void;
+  onRetry?: () => void;
   /** Text will stream in, indicate if it's still "typing"... */
   isStreaming?: boolean;
 }
@@ -64,13 +64,13 @@ export default function Response({
   const handleConfirm = useCallback(() => {
     setIsConfirmed(true);
     if (onConfirm) {
-      onConfirm(text || "");
+      onConfirm();
     }
   }, [text]);
 
   const handleRetry = useCallback(() => {
     if (onRetry) {
-      onRetry(text || "");
+      onRetry();
     }
   }, [text]);
 

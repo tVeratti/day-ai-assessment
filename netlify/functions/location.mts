@@ -1,5 +1,7 @@
 import "dotenv/config";
 import OpenAI from "openai";
+import { zodTextFormat } from "openai/helpers/zod";
+import { z } from "zod";
 
 const { OPENAI_API_KEY } = process.env;
 
@@ -7,42 +9,33 @@ const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
 
+const LocationEvent = z.object({
+  latitude: z.string(),
+  longitude: z.string(),
+  friendlyName: z.string(),
+});
+
 export default async (req: Request, _context) => {
   const body = await req.json();
   const { conversation } = body;
 
-  // TODO: Use zod too create structured model outputs
-  // -- get location lat/long
-  // OR
-  // -- get country/city/region
+  // TODO: handle input that cannot generate a valid response
 
-  const response = await openai.responses.create({
+  const response = await openai.responses.parse({
     model: "gpt-4.1-nano",
     instructions:
-      "Determine the user's location based on a potentially vague description. Provide a one sentence guess.",
+      "Determine the user's location based on a potentially vague description. Review previous responses in case there are incorrect guesses already made.",
     input: conversation,
-    stream: true,
     store: true,
-  });
-
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      for await (const chunk of response) {
-        if (chunk.type == "response.output_text.delta") {
-          const content = chunk.delta;
-          if (content) {
-            controller.enqueue(new TextEncoder().encode(content));
-          }
-        }
-      }
-      controller.close();
+    text: {
+      format: zodTextFormat(LocationEvent, "event"),
     },
   });
 
-  return new Response(readableStream, {
+  return new Response(JSON.stringify(response.output_parsed), {
     status: 200,
     headers: {
-      "Content-Type": "text/event-stream",
+      "Content-Type": "application/json",
     },
   });
 };
