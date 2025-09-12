@@ -11,6 +11,11 @@ export default async (req: Request, _context) => {
   const body = await req.json();
   const { conversation } = body;
 
+  // TODO: Use zod too create structured model outputs
+  // -- get location lat/long
+  // OR
+  // -- get country/city/region
+
   const response = await openai.responses.create({
     model: "gpt-4.1-nano",
     instructions:

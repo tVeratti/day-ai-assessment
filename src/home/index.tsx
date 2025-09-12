@@ -1,7 +1,7 @@
 import { Stack } from "@mui/material";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import fetchLocation from "../data/fetchLocation";
-import useLocationConversation from "../data/useLocationConversation";
+import useConversation from "../data/useConversation";
 import useStreamResponse from "../data/useStreamResponse";
 import InstructionsInput from "./instructions";
 import Introduction from "./introduction";
@@ -11,12 +11,19 @@ export default function Home() {
   const [isPending, startTransition] = useTransition();
   const [locations, setLocations] = useState<Array<string>>([]);
   const [responses, setResponses] = useState<Array<string>>([]);
-  const conversation = useLocationConversation(locations, responses);
+  const locationConversation = useConversation(locations, responses);
 
+  // Response streams return by fetch calls
   const [locationResponse, setLocationResponse] = useState<Response>();
+  const [recommendationResponse, setRecommendationResponse] =
+    useState<Response>();
 
   const { text: locationText, isReading: isReadingLocation } =
     useStreamResponse(locationResponse);
+
+  const { text: recommendationText } = useStreamResponse(
+    recommendationResponse,
+  );
 
   const handleSubmit = useCallback((instructions: string) => {
     // Trigger next fetch by adding in the INSTRUCTIONS, and
@@ -34,20 +41,30 @@ export default function Home() {
     ]);
   }, []);
 
-  const handleConfirmLocation = useCallback(() => {
-    // fetch attire recommendations next
-  }, []);
+  const handleConfirmLocation = useCallback(
+    (confirmedLocation: string) => {
+      console.log(confirmedLocation);
+      // fetch attire recommendations next
+      // startTransition(async () => {
+      //   const response = await fetchRecommendations(confirmedLocation);
+      //   setRecommendationResponse(response);
+
+      //   return; // done
+      // });
+    },
+    [responses],
+  );
 
   useEffect(() => {
-    if (conversation.length) {
+    if (locationConversation.length) {
       startTransition(async () => {
-        const response = await fetchLocation(conversation);
+        const response = await fetchLocation(locationConversation);
         setLocationResponse(response);
 
         return; // done
       });
     }
-  }, [conversation.length]);
+  }, [locationConversation.length]);
 
   return (
     <Stack>
@@ -63,8 +80,10 @@ export default function Home() {
           onRetry={handleRetryLocation}
         />
       )}
-      {/* Attire Response 
-      <ResponseArea />*/}
+      {/* Attire Response */}
+      {recommendationResponse && (
+        <ResponseArea isLoading={isPending} text={recommendationText} />
+      )}
     </Stack>
   );
 }

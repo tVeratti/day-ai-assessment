@@ -10,10 +10,10 @@ import {
 import { useCallback, useState } from "react";
 
 interface ResponseProps {
-  text?: string;
-  onConfirm: () => void;
-  onRetry: (currentGuess: string) => void;
   isLoading: boolean;
+  text?: string;
+  onConfirm?: (currentGuess: string) => void;
+  onRetry?: (currentGuess: string) => void;
   /** Text will stream in, indicate if it's still "typing"... */
   isStreaming?: boolean;
 }
@@ -63,11 +63,15 @@ export default function Response({
 
   const handleConfirm = useCallback(() => {
     setIsConfirmed(true);
-    onConfirm();
-  }, []);
+    if (onConfirm) {
+      onConfirm(text || "");
+    }
+  }, [text]);
 
   const handleRetry = useCallback(() => {
-    onRetry(text || "");
+    if (onRetry) {
+      onRetry(text || "");
+    }
   }, [text]);
 
   let stateEmoji: string = STATE_EMOJIS.READY;
@@ -91,12 +95,16 @@ export default function Response({
         <CardContent>{text || "..."}</CardContent>
         {!isConfirmed && !showLoading && text && (
           <CardActions>
-            <Button variant="contained" onClick={handleConfirm}>
-              Confirm
-            </Button>
-            <Button variant="text" onClick={handleRetry}>
-              Retry
-            </Button>
+            {onConfirm && (
+              <Button variant="contained" onClick={handleConfirm}>
+                Confirm
+              </Button>
+            )}
+            {onRetry && (
+              <Button variant="text" onClick={handleRetry}>
+                Retry
+              </Button>
+            )}
           </CardActions>
         )}
       </Card>

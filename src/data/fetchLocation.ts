@@ -1,7 +1,7 @@
-import type { InputEntry } from "./useLocationConversation";
+import type { InputEntry } from "./useConversation";
 
 const fetchLocation = async (conversation: Array<InputEntry>) => {
-  return await fetch("/.netlify/functions/locator", {
+  return await fetch("/.netlify/functions/location", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

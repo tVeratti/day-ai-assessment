@@ -5,7 +5,7 @@ export interface InputEntry {
   content: string;
 }
 
-const useLocationConversation = (
+const useConversation = (
   instructions: Array<string>,
   responses: Array<string>,
 ): Array<InputEntry> => {
@@ -28,4 +28,4 @@ const useLocationConversation = (
   }, [instructions.length, responses.length]);
 };
 
-export default useLocationConversation;
+export default useConversation;
