@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import fetchAttire from "../data/fetchAttire";
 import fetchLocation, { type LocationResponse } from "../data/fetchLocation";
@@ -12,7 +12,8 @@ import LocationConfirmation from "./locationSection/locationConfirmation";
 
 export default function Home() {
   const [location, setLocation] = useState<LocationResponse>();
-  const [isPending, startTransition] = useTransition();
+  const [isLocationPending, startLocationTransition] = useTransition();
+  const [isAttirePending, startAttireTransition] = useTransition();
 
   // Conversation history
   const [instructions, setInstructions] = useState<Array<string>>([]);
@@ -22,12 +23,13 @@ export default function Home() {
   // Attire Recommendation Response / Stream
   const [recommendationResponse, setRecommendationResponse] =
     useState<Response>();
-  const { text: attireJson, reset: resetAttire } = useStreamResponse(
-    recommendationResponse,
-  );
+  const {
+    text: attireJson,
+    isReading,
+    reset: resetAttire,
+  } = useStreamResponse(recommendationResponse);
 
   const handleSubmit = useCallback((newInstructions: string) => {
-    console.log(newInstructions);
     // Trigger next fetch by adding in the INSTRUCTIONS, and
     // therefore altering the `conversation` array that is being watched.
     setInstructions([newInstructions]);
@@ -48,7 +50,7 @@ export default function Home() {
   const handleConfirmLocation = useCallback(() => {
     if (location) {
       // fetch attire recommendations next
-      startTransition(async () => {
+      startAttireTransition(async () => {
         const response = await fetchAttire(
           location.latitude,
           location.longitude,
@@ -62,7 +64,7 @@ export default function Home() {
   useEffect(() => {
     if (locationConversation.length) {
       resetAttire();
-      startTransition(async () => {
+      startLocationTransition(async () => {
         const response = await fetchLocation(locationConversation);
         const result = await response.json();
         setLocation(result);
@@ -71,24 +73,33 @@ export default function Home() {
     }
   }, [locationConversation]);
 
+  console.log(isLocationPending, isAttirePending, isReading);
   return (
     <Stack>
       <Introduction isFirstQuery={true} />
       {/* Location Input */}
-      <InstructionsInput onSubmit={handleSubmit} isLoading={isPending} />
+      <InstructionsInput
+        onSubmit={handleSubmit}
+        isLoading={isLocationPending}
+      />
 
       {/* Location Response */}
       {location && (
         <LocationConfirmation
-          isLoading={isPending}
+          isLoading={isLocationPending}
           locationResponse={location}
           onConfirm={handleConfirmLocation}
           onRetry={handleRetryLocation}
         />
       )}
 
-      {/* Attire Response */}
-      <AttireSection isLoading={isPending} attireResponseJson={attireJson} />
+      <Box margin={2}>
+        {/* Attire Response */}
+        <AttireSection
+          isLoading={isAttirePending || isReading}
+          attireResponseJson={attireJson}
+        />
+      </Box>
     </Stack>
   );
 }

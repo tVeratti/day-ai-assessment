@@ -8,14 +8,13 @@ import {
   Typography,
   useTheme,
 } from "@mui/material";
-import { useCallback } from "react";
 import type { LocationResponse } from "../../data/fetchLocation";
 
 interface ResponseProps {
   locationResponse?: LocationResponse;
   isLoading: boolean;
-  onConfirm?: () => void;
-  onRetry?: () => void;
+  onConfirm: () => void;
+  onRetry: () => void;
 }
 
 interface RootProps {
@@ -60,18 +59,6 @@ export default function LocationConfirmation({
   const theme = useTheme();
   const showLoading: boolean = isLoading;
 
-  const handleConfirm = useCallback(() => {
-    if (onConfirm) {
-      onConfirm();
-    }
-  }, []);
-
-  const handleRetry = useCallback(() => {
-    if (onRetry) {
-      onRetry();
-    }
-  }, []);
-
   let stateEmoji: string = STATE_EMOJIS.READY;
   switch (true) {
     case isLoading:
@@ -98,16 +85,12 @@ export default function LocationConfirmation({
               </Typography>
             </CardContent>
             <CardActions>
-              {onConfirm && (
-                <Button variant="contained" onClick={handleConfirm}>
-                  Confirm
-                </Button>
-              )}
-              {onRetry && (
-                <Button variant="text" onClick={handleRetry}>
-                  Retry
-                </Button>
-              )}
+              <Button variant="contained" onClick={onConfirm}>
+                Confirm
+              </Button>
+              <Button variant="text" onClick={onRetry}>
+                Retry
+              </Button>
             </CardActions>
           </>
         )}
