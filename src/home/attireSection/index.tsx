@@ -1,3 +1,4 @@
+import { Typography } from "@mui/material";
 import { DayCards, formatAttireResponse } from "./dayCards";
 
 export interface AttireSectionProps {
@@ -10,7 +11,9 @@ export default function AttireSection({
   isLoading,
 }: AttireSectionProps) {
   if (isLoading) {
-    return null;
+    return (
+      <Typography variant="h5">Getting Attire Recommendations...</Typography>
+    );
   }
 
   const attireData = formatAttireResponse(attireResponseJson);

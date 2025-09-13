@@ -5,25 +5,22 @@ interface IntroductionProps {
   isFirstQuery: boolean;
 }
 
-const Root = styled.div`
-  max-width: 600px;
-  margin: 2rem 0;
-`;
+const Root = styled.div``;
 
-const INITIAL_INTRODUCTION_HEADER: string = "Get Started!";
+const INITIAL_INTRODUCTION_HEADER: string = "1. Get Started!";
 const REPEAT_INTRODUCTION_HEADER: string = "Go Again!";
 
 export default function Introduction({ isFirstQuery }: IntroductionProps) {
   return (
     <Root>
-      <Typography variant="h2" component="h1">
+      <Typography variant="h3" component="h1">
         {isFirstQuery
           ? INITIAL_INTRODUCTION_HEADER
           : REPEAT_INTRODUCTION_HEADER}
       </Typography>
       <Typography variant="h5">
-        Receive weather-appropriate attire recommendations for the next seven
-        days based on your location.
+        Describe your location, then receive weather-appropriate attire
+        recommendations for the next seven days based on your location.
       </Typography>
     </Root>
   );

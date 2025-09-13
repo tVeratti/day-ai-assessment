@@ -7,6 +7,23 @@ const theme = createTheme({
     },
     primary: {
       main: "#049DBF",
+      dark: "#0d5466",
+    },
+    secondary: {
+      main: "#ffffff", //#FCFCA4",
+    },
+    text: {
+      primary: "#083743",
+    },
+  },
+  components: {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          background: "#ffffff88",
+          border: "none",
+        },
+      },
     },
   },
 });

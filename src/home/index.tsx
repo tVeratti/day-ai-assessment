@@ -1,3 +1,4 @@
+import styled from "@emotion/styled";
 import { Box, Stack } from "@mui/material";
 import { useCallback, useEffect, useState, useTransition } from "react";
 import fetchAttire from "../data/fetchAttire";
@@ -7,8 +8,23 @@ import useStreamResponse from "../data/useStreamResponse";
 import AttireSection from "./attireSection";
 import Introduction from "./introduction";
 import InstructionsInput from "./locationSection/instructions";
-
 import LocationConfirmation from "./locationSection/locationConfirmation";
+
+const TopSection = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  flex-direction: column;
+  color: white;
+  background: #049dbf;
+  background: linear-gradient(190deg, #0d5466 0%, #049dbf 100%);
+  border-radius: 4px;
+
+  @media screen and (max-width: 900px) {
+    align-items: stretch;
+  }
+`;
 
 export default function Home() {
   const [location, setLocation] = useState<LocationResponse>();
@@ -73,17 +89,19 @@ export default function Home() {
     }
   }, [locationConversation]);
 
-  console.log(isLocationPending, isAttirePending, isReading);
   return (
     <Stack>
-      <Introduction isFirstQuery={true} />
-      {/* Location Input */}
-      <InstructionsInput
-        onSubmit={handleSubmit}
-        isLoading={isLocationPending}
-      />
+      <TopSection>
+        <Introduction isFirstQuery={true} />
+        {/* Location Input */}
+        <InstructionsInput
+          onSubmit={handleSubmit}
+          isLoading={isLocationPending}
+        />
+      </TopSection>
 
       {/* Location Response */}
+      {/* <Typography variant="h4">2. Confirm Location</Typography> */}
       {location && (
         <LocationConfirmation
           isLoading={isLocationPending}
@@ -93,7 +111,8 @@ export default function Home() {
         />
       )}
 
-      <Box margin={2}>
+      <Box marginTop={2}>
+        {/* <Typography variant="h4">3. Review Weather & Attire</Typography> */}
         {/* Attire Response */}
         <AttireSection
           isLoading={isAttirePending || isReading}

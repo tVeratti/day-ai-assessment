@@ -1,13 +1,7 @@
 import styled from "@emotion/styled";
-import {
-  Avatar,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  Typography,
-  useTheme,
-} from "@mui/material";
+
+import { Button, Fade, Stack, Typography } from "@mui/material";
+import { useCallback } from "react";
 import type { LocationResponse } from "../../data/fetchLocation";
 
 interface ResponseProps {
@@ -23,10 +17,11 @@ interface RootProps {
 
 const Root = styled.div<RootProps>`
   display: flex;
-  gap: 1rem;
+  gap: 2rem;
   align-items: center;
-  margin: 1rem 0;
-  color: ${(props) => (props.isLoading ? "red" : "black")};
+  padding: 2rem;
+  border: 2px solid #049dbf;
+  border-radius: 4px;
 
   ${(props) =>
     props.isLoading
@@ -43,12 +38,6 @@ const Root = styled.div<RootProps>`
   }
 `;
 
-const STATE_EMOJIS: Record<string, string> = {
-  LOADING: ":o",
-  STREAMING: ":D",
-  READY: ":)",
-};
-
 export default function LocationConfirmation({
   locationResponse,
   isLoading,
@@ -56,45 +45,41 @@ export default function LocationConfirmation({
   onConfirm,
   onRetry,
 }: ResponseProps) {
-  const theme = useTheme();
   const showLoading: boolean = isLoading;
 
-  let stateEmoji: string = STATE_EMOJIS.READY;
-  switch (true) {
-    case isLoading:
-      stateEmoji = STATE_EMOJIS.LOADING;
-      break;
-  }
+  const handleConfirm = useCallback(() => {
+    onConfirm();
+  }, []);
 
   return (
     <Root isLoading={showLoading}>
-      <Avatar
-        sx={{ bgcolor: theme.palette.primary.main, transform: "rotate(90deg)" }}
-      >
-        {stateEmoji}
-      </Avatar>
-      <Card variant="outlined">
-        {!showLoading && locationResponse && (
-          <>
-            <CardContent>
+      {!showLoading && locationResponse && (
+        <Fade in={true}>
+          <Stack gap={3}>
+            <div>
+              <Typography variant="h4" component="p" color="#049dbf">
+                {locationResponse.friendlyName}
+              </Typography>
+
               <Typography variant="body1">
                 {locationResponse.guessReason}
               </Typography>
-              <Typography variant="h4" component="p">
-                {locationResponse.friendlyName}
+              <Typography variant="caption" sx={{ opacity: 0.5 }}>
+                {locationResponse.latitude}, {locationResponse.longitude}
               </Typography>
-            </CardContent>
-            <CardActions>
-              <Button variant="contained" onClick={onConfirm}>
+            </div>
+
+            <Stack gap={2} direction="row">
+              <Button variant="contained" size="large" onClick={handleConfirm}>
                 Confirm
               </Button>
-              <Button variant="text" onClick={onRetry}>
+              <Button variant="outlined" size="large" onClick={onRetry}>
                 Retry
               </Button>
-            </CardActions>
-          </>
-        )}
-      </Card>
+            </Stack>
+          </Stack>
+        </Fade>
+      )}
     </Root>
   );
 }

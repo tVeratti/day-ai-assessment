@@ -1,11 +1,11 @@
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import {
-  FilledInput,
   FormControl,
-  FormLabel,
   IconButton,
   InputAdornment,
+  OutlinedInput,
 } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { useCallback, useState } from "react";
 
 interface InstructionsProps {
@@ -14,6 +14,12 @@ interface InstructionsProps {
 }
 
 const SUBMIT_KEYS: Array<String> = ["Enter"];
+
+const Input = styled(OutlinedInput)(
+  () => `
+background: white;
+`,
+);
 
 export default function Instructions({
   isLoading,
@@ -43,13 +49,14 @@ export default function Instructions({
 
   return (
     <FormControl fullWidth>
-      <FormLabel>Describe your location...</FormLabel>
-      <FilledInput
+      <Input
+        sx={{ background: "white" }}
         name="instructions"
         aria-label="Location Description"
+        placeholder="Describe your location..."
         required
         multiline
-        rows={3}
+        rows={2}
         fullWidth
         disabled={isLoading}
         onKeyDown={handleKeyDown}

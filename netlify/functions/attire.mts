@@ -32,10 +32,14 @@ export default async (req: Request, _context) => {
   const body = await req.json();
   const { latitude, longitude } = body;
 
+  const digitsRegex = /[^0-9.]+/g;
+  const latitudeDigits = latitude.replace(digitsRegex, "");
+  const longitudeDigits = longitude.replace(digitsRegex, "");
+
   // Weather
   // -------------------------------------
   // Get forecast from Open Meteo
-  const meteoApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&forecast_days=${NUM_DAYS_FORECAST}&daily=${DAILY_PARAMS}&temperature_unit=fahrenheit`;
+  const meteoApiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${latitudeDigits}&longitude=${longitudeDigits}&forecast_days=${NUM_DAYS_FORECAST}&daily=${DAILY_PARAMS}&temperature_unit=fahrenheit`;
   const weatherResponse = await fetch(meteoApiUrl);
   const weatherResult = await weatherResponse.json();
 

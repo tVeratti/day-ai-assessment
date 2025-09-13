@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { flushSync } from "react-dom";
 
 const useStreamResponse = (response: Response | undefined) => {
   const [text, setText] = useState<string>("");
@@ -9,6 +8,7 @@ const useStreamResponse = (response: Response | undefined) => {
 
   useEffect(() => {
     if (response?.body) {
+      setIsReading(true);
       setText("");
 
       // Stream the response and save the text delta
@@ -19,9 +19,7 @@ const useStreamResponse = (response: Response | undefined) => {
             const { done, value } = await reader.read();
 
             if (done) {
-              flushSync(() => {
-                setIsReading(false);
-              });
+              setIsReading(false);
               break;
             }
 

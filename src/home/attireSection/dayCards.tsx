@@ -23,11 +23,15 @@ const Root = styled.div`
   flex-wrap: wrap;
   align-items: stretch;
   gap: 1rem;
+  margin: 2rem 0;
 `;
 
 export function DayCards({ days }: DayCardsProps) {
   const cardNodes = useMemo(
-    () => days.map((day: DayCardProps) => <DayCard key={day.date} {...day} />),
+    () =>
+      days.map((day: DayCardProps, index: number) => (
+        <DayCard key={day.date} {...day} index={index} />
+      )),
     [days],
   );
   return <Root>{cardNodes}</Root>;
