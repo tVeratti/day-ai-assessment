@@ -7,7 +7,7 @@ interface IntroductionProps {
 
 const Root = styled.div``;
 
-const INITIAL_INTRODUCTION_HEADER: string = "1. Get Started!";
+const INITIAL_INTRODUCTION_HEADER: string = "Get Started!";
 const REPEAT_INTRODUCTION_HEADER: string = "Go Again!";
 
 export default function Introduction({ isFirstQuery }: IntroductionProps) {
@@ -18,7 +18,7 @@ export default function Introduction({ isFirstQuery }: IntroductionProps) {
           ? INITIAL_INTRODUCTION_HEADER
           : REPEAT_INTRODUCTION_HEADER}
       </Typography>
-      <Typography variant="h5">
+      <Typography variant="h5" sx={{ opacity: 0.8 }}>
         Describe your location, then receive weather-appropriate attire
         recommendations for the next seven days based on your location.
       </Typography>

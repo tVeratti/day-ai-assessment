@@ -13,16 +13,15 @@ import LocationConfirmation from "./locationSection/locationConfirmation";
 const TopSection = styled.div`
   display: flex;
   gap: 1rem;
-  margin-bottom: 2rem;
-  padding: 2rem;
+  margin: 0 -2rem;
+  padding: 4rem;
   flex-direction: column;
   color: white;
   background: #049dbf;
   background: linear-gradient(190deg, #0d5466 0%, #049dbf 100%);
-  border-radius: 4px;
 
   @media screen and (max-width: 900px) {
-    align-items: stretch;
+    padding: 4rem 2rem;
   }
 `;
 

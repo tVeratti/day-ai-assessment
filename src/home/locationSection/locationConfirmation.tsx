@@ -20,6 +20,7 @@ const Root = styled.div<RootProps>`
   gap: 2rem;
   align-items: center;
   padding: 2rem;
+  margin: 2rem 0;
   border: 2px solid #049dbf;
   border-radius: 4px;
 
